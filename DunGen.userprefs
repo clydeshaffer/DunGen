@@ -1,0 +1,13 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\Supercat\Assets\6by7\ProGrids\Scripts\Editor\ProGrids_GUI.js">
+    <Files>
+      <File FileName="..\Supercat\Assets\6by7\ProGrids\Scripts\Editor\ProGrids_Base.js" Line="54" Column="26" />
+      <File FileName="..\Supercat\Assets\6by7\ProGrids\Scripts\Editor\ProGrids_GUI.js" Line="111" Column="7" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
