@@ -6,6 +6,7 @@ public class MeshBuilder {
 	public static GameObject BuildRoom(RoomNode room, RoomStyle roomStyle)
 	{
 		GameObject boxObj = new GameObject("Room");
+
 		for(int i = 0; i < 6; i ++)
 		{
 			Vector3 dir = Util.VecEnum(i);
@@ -18,13 +19,14 @@ public class MeshBuilder {
 			Bounds[] tempDoorSet = new Bounds[room.neighbors.Count];
 			foreach(RoomNode c in room.neighbors)
 			{
-				//if(dir == RoomNode.CheckRoomTouch(room.roomBounds, c.roomBounds))
-				//{
+				if(dir == RoomNode.CheckRoomTouch(room.roomBounds, c.roomBounds))
+				{
 					Vector3 newCenter = c.roomBounds.center - Vector3.Scale(c.roomBounds.extents, dir);
-					Vector3 newSize = Vector3.Scale(c.roomBounds.size, Util.LNot(dir));
-					tempDoorSet[holeCount] = new Bounds(newCenter, newSize);
+					Vector3 newSize = c.roomBounds.size; //Vector3.Scale(c.roomBounds.size, Util.LNot(dir));
+					tempDoorSet[holeCount] = RoomNode.OverlapBounds(room.roomBounds, c.roomBounds);
+					tempDoorSet[holeCount].extents += Util.VecAbs(dir) * 2;
 					holeCount ++;
-				//}
+				}
 			}
 			
 			Bounds[] doorSet = new Bounds[holeCount];

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class OctTreeTest : MonoBehaviour {
 
-	public int minRoomSize;
+	public Vector3 minRoomSize;
 	
 	public Bounds totalBounds;
 	

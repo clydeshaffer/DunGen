@@ -63,7 +63,7 @@ public class RoomNode {
 		connections = new LinkedList<RoomNode>();
 	}
 	
-	public static Vector3 OverlapAxes(Bounds a, Bounds b)
+	public static Vector3 OverlapAxes(Bounds a, Bounds b, float minOverlap = 0)
 	{
 		
 		Vector3 result = Vector3.zero;
@@ -72,13 +72,13 @@ public class RoomNode {
 		{
 			Interval a_ = new Interval(a.min[i], a.max[i]);
 			Interval b_ = new Interval(b.min[i], b.max[i]);
-			if(Interval.CheckOverlap(a_, b_)) result[i] = 1;
+			if(Interval.CheckOverlap(a_, b_, minOverlap)) result[i] = 1;
 		}
 		
 		return result;
 	}
 	
-	public static bool CheckOverlap(Bounds a, Bounds b)
+	public static bool CheckOverlap(Bounds a, Bounds b, float minOverlap = 0)
 	{
 		Interval a_x = new Interval(a.min.x, a.max.x);
 		Interval a_y = new Interval(a.min.y, a.max.y);
@@ -88,9 +88,9 @@ public class RoomNode {
 		Interval b_y = new Interval(b.min.y, b.max.y);
 		Interval b_z = new Interval(b.min.z, b.max.z);
 		
-		if(!Interval.CheckOverlap(a_x, b_x)) return false;
-		if(!Interval.CheckOverlap(a_y, b_y)) return false;
-		if(!Interval.CheckOverlap(a_z, b_z)) return false;
+		if(!Interval.CheckOverlap(a_x, b_x, minOverlap)) return false;
+		if(!Interval.CheckOverlap(a_y, b_y, minOverlap)) return false;
+		if(!Interval.CheckOverlap(a_z, b_z, minOverlap)) return false;
 		
 		return true;
 	}
@@ -129,13 +129,23 @@ public class RoomNode {
 		return Vector3.zero;
 	}
 
-	public void RandomizeBounds(Vector3 mask, float minSize, float maxSize)
+	public void RandomizeBounds(Vector3 mask, Vector3 minSize, Vector3 maxSize)
 	{
 		for (int i = 0; i < 3; i ++)
 		{
-			if(mask[i] != 0) RandomizeBoundsOnAxis(i, minSize, maxSize);
+			if(mask[i] != 0) RandomizeBoundsOnAxis(i, minSize[i], maxSize[i]);
 		}
 	}
+
+	public void QuantizeBounds(float increment = 1)
+	{
+		for (int i = 0; i < 3; i ++)
+		{
+			roomBounds.min = Util.VecRound(roomBounds.min, increment);
+			roomBounds.max = Util.VecRound(roomBounds.max, increment);
+		}
+	}
+
 	//direction -- a vector where each component is in the set {-1 , 0, 1}
 	//newExtents -- extents of resulting bounds
 	public void ShoveToEdge(Vector3 direction, Vector3 newExtents)

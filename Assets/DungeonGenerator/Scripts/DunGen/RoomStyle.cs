@@ -6,7 +6,9 @@ public class RoomStyle : MonoBehaviour {
 	public Material[] materials;
 	
 	public string musicName = "";
-	
+
+	public MeshTransform meshTransform;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -16,4 +18,5 @@ public class RoomStyle : MonoBehaviour {
 	void Update () {
 	
 	}
+	
 }

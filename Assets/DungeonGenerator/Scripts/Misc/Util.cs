@@ -51,6 +51,20 @@ public class Util {
 		return v.x + v.y + v.z;
 	}
 
+	public static float VecMin(Vector3 v)
+	{
+		return Mathf.Min (v.x, v.y, v.z);
+	}
+
+	public static float RoundTo(float number, float roundto)
+	{
+		return Mathf.Round (number / roundto) * roundto;
+	}
+
+	public static bool Approximately(float a, float b, float tolerance)
+	{
+		return Mathf.Abs(a - b) < tolerance;
+	}
 
 	public static Vector3 VecSign(Vector3 v)
 	{
@@ -89,11 +103,11 @@ public class Util {
 		return result;
 	}
 	
-	public static Vector3 VecRound(Vector3 v)
+	public static Vector3 VecRound(Vector3 v, float roundto = 1)
 	{
-		v.x = Mathf.Round(v.x);
-		v.y = Mathf.Round(v.y);
-		v.z = Mathf.Round(v.z);
+		v.x = Util.RoundTo(v.x, roundto);
+		v.y = Util.RoundTo(v.y, roundto);
+		v.z = Util.RoundTo(v.z, roundto);
 		return v;
 	}
 	

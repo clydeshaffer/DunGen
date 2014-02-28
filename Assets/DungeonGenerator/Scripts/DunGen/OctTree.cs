@@ -73,27 +73,27 @@ public class OctTree {
 		
 	}
 	
-	public Vector3 RandomSlice(float minRoomSize)
+	public Vector3 RandomSlice(Vector3 minRoomSize)
 	{
 		
 		Vector3 slice;
 		
-		slice.x = Mathf.Round(Random.Range(boundary.min.x + minRoomSize, boundary.max.x - minRoomSize));
-		slice.y = Mathf.Round(Random.Range(boundary.min.y + minRoomSize, boundary.max.y - minRoomSize));
-		slice.z = Mathf.Round(Random.Range(boundary.min.z + minRoomSize, boundary.max.z - minRoomSize));
+		slice.x = Mathf.Round(Random.Range(boundary.min.x + minRoomSize.x, boundary.max.x - minRoomSize.x));
+		slice.y = Mathf.Round(Random.Range(boundary.min.y + minRoomSize.y, boundary.max.y - minRoomSize.y));
+		slice.z = Mathf.Round(Random.Range(boundary.min.z + minRoomSize.z, boundary.max.z - minRoomSize.z));
 		
 		return slice;
 		
 		
 	}
 	
-	public void GenerateZones(int depth, float minRoomSize)
+	public void GenerateZones(int depth, Vector3 minRoomSize)
 	{
 		if(depth < 1) return;
 		
-		if(boundary.extents.x < minRoomSize) return;
-		if(boundary.extents.y < minRoomSize) return;
-		if(boundary.extents.z < minRoomSize) return;
+		if(boundary.extents.x < minRoomSize.x) return;
+		if(boundary.extents.y < minRoomSize.y) return;
+		if(boundary.extents.z < minRoomSize.z) return;
 		
 		Vector3 slice = RandomSlice(minRoomSize);
 		
@@ -105,9 +105,9 @@ public class OctTree {
 			Vector3 size = Vector3.Scale(farCorner - slice,dir);
 			Vector3 center = slice + Vector3.Scale(size, dir * 0.5f);
 			Bounds newBounds = new Bounds(center,size);
-			if(newBounds.size.x >= minRoomSize
-				&& newBounds.size.y >= minRoomSize
-				&& newBounds.size.z >= minRoomSize)
+			if(newBounds.size.x >= minRoomSize.x
+				&& newBounds.size.y >= minRoomSize.y
+				&& newBounds.size.z >= minRoomSize.z)
 			{
 				children[oct] = new OctTree(newBounds);
 				children[oct].gizmoColor = Color.Lerp(new Color(Mathf.Max(dir.x, 0),Mathf.Max(dir.y, 0),Mathf.Max(dir.z, 0)),gizmoColor,0.5f);

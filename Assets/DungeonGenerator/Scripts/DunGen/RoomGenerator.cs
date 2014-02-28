@@ -5,8 +5,9 @@ using System.Collections.Generic;
 public class RoomGenerator : MonoBehaviour
 {
 
-		public float minRoomSize;
-		public float maxRoomSize;
+		public Vector3 minRoomSize = Vector3.one;
+		public Vector3 maxRoomSize = Vector3.one * 2;
+		public float minSeparation = 1;
 		public int corridorSize;
 		public Bounds totalBounds;
 		public int depth;
@@ -16,8 +17,6 @@ public class RoomGenerator : MonoBehaviour
 		public bool showRoomConnections = false;
 		public bool regen = false;
 		public LinkedList<RoomNode> roomNodeList = null;
-		public GameObject roomObj;
-		public static GameObject roomObjStatic;
 		public GameObject indicatorPrefab;
 		public RoomStyle roomStyle;
 		public int setSeed = 0;
@@ -157,11 +156,11 @@ public class RoomGenerator : MonoBehaviour
 								if (lastDir != Vector3.zero) {
 										r.ShoveToEdge (lastDir, Vector3.one * 0.5f * corridorSize);
 								} else
-										r.RandomizeBounds (randomAxes, corridorSize, corridorSize);
+										r.RandomizeBounds (randomAxes, corridorSize * Vector3.one, corridorSize * Vector3.one);
 								int limit = 12;
 								while (GetOverlapped(r.roomBounds, existingRooms,corridorDir) != null && limit > 0) {
 										r.roomBounds = b;
-										r.RandomizeBounds (randomAxes, corridorSize, corridorSize);
+										r.RandomizeBounds (randomAxes, corridorSize * Vector3.one, corridorSize * Vector3.one);
 										limit --;
 								}
 								if (limit == 0) {
@@ -207,7 +206,7 @@ public class RoomGenerator : MonoBehaviour
 								if (lastDir != Vector3.zero) {
 										r.ShoveToEdge (lastDir, Vector3.one * 0.5f * corridorSize);
 								} else
-										r.RandomizeBounds (randomAxes, corridorSize, corridorSize);
+										r.RandomizeBounds (randomAxes, corridorSize * Vector3.one, corridorSize * Vector3.one);
 								int limit = 12;
 								while (GetOverlapped(r.roomBounds, existingRooms,corridorDir) != null && limit > 0) {
 										b = RoomNode.OverlapBounds (roomA.roomBounds, roomB.roomBounds);
@@ -221,7 +220,7 @@ public class RoomGenerator : MonoBehaviour
 										b.center = newCenter;
 										b.extents = newExtents;
 										r.roomBounds = b;
-										r.RandomizeBounds (randomAxes, corridorSize, corridorSize);
+										r.RandomizeBounds (randomAxes, corridorSize * Vector3.one, corridorSize * Vector3.one);
 										limit --;
 								}
 								if (limit == 0) {
@@ -229,12 +228,12 @@ public class RoomGenerator : MonoBehaviour
 				
 								} else {
 										LinkedList<RoomNode> result = BuildCorridors (r, roomB, corridorDir, existingRooms);
-									if(result.Count != 0) {	
-									r.isCorridor = true;
-										RoomNode.MakeNeighbors (roomA, r);
-										result.AddFirst (r);
-										return result;
-					}
+										if (result.Count != 0) {	
+												r.isCorridor = true;
+												RoomNode.MakeNeighbors (roomA, r);
+												result.AddFirst (r);
+												return result;
+										}
 								}
 						} 
 						attempts--;
@@ -256,7 +255,9 @@ public class RoomGenerator : MonoBehaviour
 						}
 				} else {
 						RoomNode newRoom = new RoomNode (tree.boundary);
-						newRoom.RandomizeBounds(Vector3.one,minRoomSize, maxRoomSize); 
+						newRoom.roomBounds.extents -= Vector3.one * minSeparation;
+						newRoom.RandomizeBounds (Vector3.one, minRoomSize, maxRoomSize);
+						newRoom.QuantizeBounds(corridorSize);
 						/*Vector3 center, extents;
 			
 						extents.x = Mathf.Floor (Random.Range (minRoomSize / 2, tree.boundary.extents.x));
@@ -272,7 +273,7 @@ public class RoomGenerator : MonoBehaviour
 						newRoom.roomBounds.extents = extents;*/
 
 						newRoom.octTreeNode = tree;
-			                        roomNodeList.AddFirst (newRoom);
+						roomNodeList.AddFirst (newRoom);
 						tree.roomNode = newRoom;
 				}
 		}
@@ -342,9 +343,8 @@ public class RoomGenerator : MonoBehaviour
 	
 		public void MakeDungeon ()
 		{
-				roomObjStatic = roomObj;
 				root = new OctTree (totalBounds);
-				root.GenerateZones (depth, (int) minRoomSize);
+				root.GenerateZones (depth, minRoomSize);
 				roomNodeList = new LinkedList<RoomNode> ();
 				GenerateRooms (root);
 				ConnectRooms ();
@@ -354,13 +354,13 @@ public class RoomGenerator : MonoBehaviour
 		// Use this for initialization
 		void Start ()
 		{
-				roomObjStatic = roomObj;
 		}
 	
 		// Update is called once per frame
 		void Update ()
 		{
 				if (regen) {
+						System.DateTime timestamp = System.DateTime.Now;
 						if (setSeed != 0)
 								Random.seed = setSeed;
 						regen = false;
@@ -370,6 +370,7 @@ public class RoomGenerator : MonoBehaviour
 								}
 						MakeDungeon ();
 						InstantiateRooms (roomNodeList, roomStyle);
+						Debug.Log ("Finished in " + (System.DateTime.Now - timestamp).TotalMilliseconds + " ms");
 				}
 		}
 	
@@ -391,7 +392,7 @@ public class RoomGenerator : MonoBehaviour
 						Gizmos.DrawLine(room.roomBounds.center,neighbor.roomBounds.center);
 						Vector3 diff = (neighbor.roomBounds.center - room.roomBounds.center).normalized;
 						Vector3 cam = UnityEditor.SceneView.currentDrawingSceneView.camera.transform.forward;
-						//Gizmos.DrawLine(room.roomBounds.center + Vector3.Cross(diff, cam),neighbor.roomBounds.center);
+						Gizmos.DrawLine(room.roomBounds.center + Vector3.Cross(diff, cam),neighbor.roomBounds.center);
 					}
 				}
  			}

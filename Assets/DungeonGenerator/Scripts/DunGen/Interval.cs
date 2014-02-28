@@ -12,10 +12,12 @@ public class Interval {
 	
 	public float min;
 	public float max;
-	
+
+	private const float tol = 0.001f;
+
 	public bool ContainsInclusive(float n)
 	{
-		return (n >= min) && (n <= max);
+		return (n > min || Util.Approximately(n, min, tol)) && (n < max || Util.Approximately(n, max, tol));
 	}
 
 	public Interval randomSub(float minSize, float maxSize)
@@ -31,8 +33,8 @@ public class Interval {
 	//Otherwise return 0
 	public static int CheckTouching(Interval a, Interval b)
 	{
-		if (Mathf.Approximately (a.max, b.min)) return 1;
-		if (Mathf.Approximately (b.max, a.min)) return -1;
+		if (Util.Approximately (a.max, b.min, tol)) return 1;
+		if (Util.Approximately (b.max, a.min, tol)) return -1;
 		return 0;
 	}
 	

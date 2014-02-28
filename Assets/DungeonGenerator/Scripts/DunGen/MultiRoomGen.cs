@@ -11,16 +11,23 @@ public class MultiRoomGen : MonoBehaviour
 	public RoomGenerator[] roomGens;
 	
 	public RoomStyle interCorridorStyle;
+
+	public int setSeed = 0;
 	
 	// Use this for initialization
 	void Start ()
 	{
+		if (setSeed != 0)
+						Random.seed = setSeed;
+
 		allRooms = new LinkedList<RoomNode>();
 		interCorridors = new LinkedList<RoomNode>();
 		foreach(RoomGenerator rg in roomGens)
 		{
 			rg.totalBounds.center += rg.transform.position;
 			rg.totalBounds.size = Vector3.Scale(rg.totalBounds.size, rg.transform.localScale);
+			rg.minRoomSize = Vector3.Scale(rg.minRoomSize, rg.transform.localScale);
+			rg.maxRoomSize = Vector3.Scale(rg.maxRoomSize, rg.transform.localScale);
 			rg.MakeDungeon();
 			Util.LLAppend<RoomNode>(allRooms, rg.roomNodeList);
 		}
