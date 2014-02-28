@@ -128,6 +128,42 @@ public class RoomNode {
 		
 		return Vector3.zero;
 	}
+
+	public void RandomizeBounds(Vector3 mask, float minSize, float maxSize)
+	{
+		for (int i = 0; i < 3; i ++)
+		{
+			if(mask[i] != 0) RandomizeBoundsOnAxis(i, minSize, maxSize);
+		}
+	}
+	//direction -- a vector where each component is in the set {-1 , 0, 1}
+	//newExtents -- extents of resulting bounds
+	public void ShoveToEdge(Vector3 direction, Vector3 newExtents)
+	{
+		roomBounds.center += Vector3.Scale (direction, roomBounds.extents);
+		roomBounds.center -= Vector3.Scale(direction, newExtents);
+		Vector3 ex = roomBounds.extents;
+		for (int i = 0; i < 3; i ++)
+		{
+			if(direction[i] != 0)
+			{
+				ex[i] = newExtents[i];
+			}
+		}
+		roomBounds.extents = ex;
+	}
+
+	public void RandomizeBoundsOnAxis(int axisIndex, float minSize, float maxSize)
+	{
+		Interval axisInterval = new Interval (roomBounds.min [axisIndex], roomBounds.max [axisIndex]);
+		Interval newInterval = axisInterval.randomSub (minSize, maxSize);
+		Vector3 newMin = roomBounds.min;
+		Vector3 newMax = roomBounds.max;
+		newMin [axisIndex] = newInterval.min;
+		newMax [axisIndex] = newInterval.max;
+		roomBounds.min = newMin;
+		roomBounds.max = newMax;
+	}
 	
 	public static Bounds OverlapBounds(Bounds a, Bounds b)
 	{
@@ -145,8 +181,8 @@ public class RoomNode {
 			}
 			else
 			{
-				min[i] = a.min[i];
-				max[i] = a.max[i];
+				min[i] = overlap.max;
+				max[i] = overlap.min;
 			}
 		}
 		Bounds overlapField = new Bounds();

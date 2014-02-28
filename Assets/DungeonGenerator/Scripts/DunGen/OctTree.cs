@@ -73,7 +73,7 @@ public class OctTree {
 		
 	}
 	
-	public Vector3 RandomSlice(int minRoomSize)
+	public Vector3 RandomSlice(float minRoomSize)
 	{
 		
 		Vector3 slice;
@@ -87,7 +87,7 @@ public class OctTree {
 		
 	}
 	
-	public void GenerateZones(int depth, int minRoomSize)
+	public void GenerateZones(int depth, float minRoomSize)
 	{
 		if(depth < 1) return;
 		

@@ -18,13 +18,13 @@ public class MeshBuilder {
 			Bounds[] tempDoorSet = new Bounds[room.neighbors.Count];
 			foreach(RoomNode c in room.neighbors)
 			{
-				if(dir == RoomNode.CheckRoomTouch(room.roomBounds, c.roomBounds))
-				{
+				//if(dir == RoomNode.CheckRoomTouch(room.roomBounds, c.roomBounds))
+				//{
 					Vector3 newCenter = c.roomBounds.center - Vector3.Scale(c.roomBounds.extents, dir);
 					Vector3 newSize = Vector3.Scale(c.roomBounds.size, Util.LNot(dir));
 					tempDoorSet[holeCount] = new Bounds(newCenter, newSize);
 					holeCount ++;
-				}
+				//}
 			}
 			
 			Bounds[] doorSet = new Bounds[holeCount];

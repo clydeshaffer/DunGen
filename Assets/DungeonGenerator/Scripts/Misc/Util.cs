@@ -50,7 +50,15 @@ public class Util {
 	{
 		return v.x + v.y + v.z;
 	}
-	
+
+
+	public static Vector3 VecSign(Vector3 v)
+	{
+				return new Vector3 (Mathf.Sign (v.x),
+		                   Mathf.Sign (v.y),
+		                   Mathf.Sign (v.z));
+	}
+
 	public static float VecSig(Vector3 v)
 	{
 		float max = Mathf.Max(Mathf.Abs(v.x),Mathf.Abs(v.y),Mathf.Abs(v.z));
@@ -59,7 +67,18 @@ public class Util {
 		if(max == Mathf.Abs(v.z)) return v.z;
 		return 0;
 	}
-	
+
+	public static int VecNonZeroIndex(Vector3 v)
+	{
+		if (v.x != 0)
+						return 0;
+		if (v.y != 0)
+						return 1;
+		if (v.z != 0)
+						return 2;
+		return -1;
+	}
+
 	public static Vector3 VecLongestAxis(Vector3 v)
 	{
 		int greatest = 0;

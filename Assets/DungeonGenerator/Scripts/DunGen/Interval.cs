@@ -17,15 +17,22 @@ public class Interval {
 	{
 		return (n >= min) && (n <= max);
 	}
-	
+
+	public Interval randomSub(float minSize, float maxSize)
+	{
+		float st = Random.Range (min, max - minSize);
+		float en = Mathf.Min(Random.Range (minSize, maxSize) + st, max);
+		return new Interval (st, en);
+	}
+
 	//Check if two intervals share a limit
 	//Return 1 if a is less than b, and they touch
 	//Return -1 if a is greater than b, and they touch
 	//Otherwise return 0
 	public static int CheckTouching(Interval a, Interval b)
 	{
-		if(a.max == b.min) return 1;
-		if(b.max == a.min) return -1;
+		if (Mathf.Approximately (a.max, b.min)) return 1;
+		if (Mathf.Approximately (b.max, a.min)) return -1;
 		return 0;
 	}
 	
@@ -59,12 +66,20 @@ public class Interval {
 		return (min <= max);
 	}
 	
-	//Return the overlap interval. Throws exception if it doesn't exist
+	//Return the overlap interval.
 	public static Interval GetOverlap(Interval a, Interval b)
 	{
 		float min = Mathf.Max(a.min, b.min);
 		float max = Mathf.Min(a.max, b.max);
-		if(min > max) return new Interval(0,0);
+		//if(min > max) return new Interval(0,0);
 		return new Interval(min, max);
+	}
+
+	public static Interval GetOverlapOrGap(Interval a, Interval b)
+	{
+		float min = Mathf.Max(a.min, b.min);
+		float max = Mathf.Min(a.max, b.max);
+		if (min > max) return new Interval(max, min);
+		else return new Interval(min, max);
 	}
 }
