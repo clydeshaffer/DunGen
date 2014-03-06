@@ -18,6 +18,7 @@ public class RoomGenerator : MonoBehaviour
 		public bool regen = false;
 		public LinkedList<RoomNode> roomNodeList = null;
 		public GameObject indicatorPrefab;
+		public GameObject doorPiecePrefab;
 		public RoomStyle roomStyle;
 		public int setSeed = 0;
 	
@@ -170,6 +171,7 @@ public class RoomGenerator : MonoBehaviour
 										r.isCorridor = true;
 										RoomNode.MakeNeighbors (roomA, r);
 										RoomNode.MakeNeighbors (r, roomB);
+										r.name = numOverlaps.ToString ();
 										result.AddFirst (r);
 
 										return result;
@@ -195,7 +197,7 @@ public class RoomGenerator : MonoBehaviour
 										newExtents [selectedAxis] = b.extents [selectedAxis];
 								}
 								float sign = Mathf.Sign (newCenter [selectedAxis] - roomA.roomBounds.center [selectedAxis]);
-								float extension = 1;//Random.Range (corridorSize, roomB.roomBounds.extents [selectedAxis]);
+								float extension = Random.Range (corridorSize, roomB.roomBounds.extents [selectedAxis]);
 								newCenter [selectedAxis] += extension * sign;
 								newExtents [selectedAxis] += extension;
 								b.center = newCenter;
@@ -212,9 +214,17 @@ public class RoomGenerator : MonoBehaviour
 										b = RoomNode.OverlapBounds (roomA.roomBounds, roomB.roomBounds);
 										newCenter = b.center;
 										newExtents = b.extents;
-										newCenter [selectedOther] = roomA.roomBounds.center [selectedOther];
-										newExtents [selectedOther] = roomA.roomBounds.extents [selectedOther];
-										//extension = Random.Range (corridorSize, roomB.roomBounds.extents [selectedAxis]);
+										if (numOverlaps == 1) {
+												newCenter [selectedOther] = roomA.roomBounds.center [selectedOther];
+												newExtents [selectedOther] = roomA.roomBounds.extents [selectedOther];
+										} else if (numOverlaps == 0) {
+												newCenter = roomA.roomBounds.center;
+												newExtents = roomA.roomBounds.extents;
+												newCenter [selectedAxis] = b.center [selectedAxis];
+												newExtents [selectedAxis] = b.extents [selectedAxis];
+										}
+										
+										extension = Random.Range (corridorSize, roomB.roomBounds.extents [selectedAxis]);
 										newCenter [selectedAxis] += extension * sign;
 										newExtents [selectedAxis] += extension;
 										b.center = newCenter;
@@ -231,6 +241,7 @@ public class RoomGenerator : MonoBehaviour
 										if (result.Count != 0) {	
 												r.isCorridor = true;
 												RoomNode.MakeNeighbors (roomA, r);
+												r.name = numOverlaps.ToString ();
 												result.AddFirst (r);
 												return result;
 										}
@@ -257,7 +268,7 @@ public class RoomGenerator : MonoBehaviour
 						RoomNode newRoom = new RoomNode (tree.boundary);
 						newRoom.roomBounds.extents -= Vector3.one * minSeparation;
 						newRoom.RandomizeBounds (Vector3.one, minRoomSize, maxRoomSize);
-						newRoom.QuantizeBounds(corridorSize);
+						newRoom.QuantizeBounds (corridorSize);
 						/*Vector3 center, extents;
 			
 						extents.x = Mathf.Floor (Random.Range (minRoomSize / 2, tree.boundary.extents.x));
@@ -340,7 +351,42 @@ public class RoomGenerator : MonoBehaviour
 						room.roomObject = newBox;
 				}
 		}
-	
+
+		public static void FurnishRooms (LinkedList<RoomNode> roomList, RoomStyle rmstyle, GameObject doorConnector)
+		{
+			foreach (RoomNode room in roomList) {
+				if(room.isCorridor == false)
+				{
+					PlatformAssembler asm = room.roomObject.AddComponent<PlatformAssembler>();
+					asm.placeableObjects = rmstyle.placeablePlatforms;
+					LinkedList<PlatformingElement> doors = new LinkedList<PlatformingElement>();
+					foreach(RoomNode neighbor in room.neighbors)
+					{
+						Bounds overl = RoomNode.OverlapBounds(room.roomBounds, neighbor.roomBounds);
+						if(overl.extents.y > 0.01f)
+						{
+							GameObject newDoorPiece = (GameObject) Instantiate(doorConnector, overl.center - Vector3.Scale(Vector3.up, overl.extents), Quaternion.LookRotation(RoomNode.CheckRoomTouch(neighbor.roomBounds, room.roomBounds)));
+							doors.AddFirst(newDoorPiece.GetComponent<PlatformingElement>());
+						}
+						else
+						{
+							GameObject newDoorPiece = (GameObject) Instantiate(doorConnector, overl.center, Quaternion.LookRotation(RoomNode.CheckRoomTouch(neighbor.roomBounds, room.roomBounds)));
+							doors.AddFirst(newDoorPiece.GetComponent<PlatformingElement>());
+						}
+					}
+					if(doors.Count > 1) {
+						PlatformingElement[] starts = new PlatformingElement[doors.Count];
+						int doorind = 0;
+						foreach(PlatformingElement pe in doors)
+						{
+							starts[doorind++] = pe;
+						}
+						asm.ConnectDoorPieces(starts);
+					}
+				}
+			}
+		}
+
 		public void MakeDungeon ()
 		{
 				root = new OctTree (totalBounds);
@@ -370,6 +416,7 @@ public class RoomGenerator : MonoBehaviour
 								}
 						MakeDungeon ();
 						InstantiateRooms (roomNodeList, roomStyle);
+						FurnishRooms (roomNodeList, roomStyle, doorPiecePrefab);
 						Debug.Log ("Finished in " + (System.DateTime.Now - timestamp).TotalMilliseconds + " ms");
 				}
 		}

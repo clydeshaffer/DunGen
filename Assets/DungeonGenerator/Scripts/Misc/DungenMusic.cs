@@ -1,30 +1,30 @@
 using UnityEngine;
 using System.Collections;
 
-public class DungenMusic : MonoBehaviour {
+public class DungenMusic : MonoBehaviour
+{
 	
-	RoomGenerator rg;
-	bool containsTarget = false;
+		RoomGenerator rg;
+		bool containsTarget = false;
 	
-	// Use this for initialization
-	void Start () {
-		rg = GetComponent<RoomGenerator>();
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		bool containsNow = rg.totalBounds.Contains(Camera.mainCamera.transform.position);
-		
-		if(containsNow && !containsTarget)
+		// Use this for initialization
+		void Start ()
 		{
-			MusicManager.mm.PlayTrack(rg.roomStyle.musicName);
+				rg = GetComponent<RoomGenerator> ();
+	
 		}
-		else if(containsTarget && !containsNow)
+	
+		// Update is called once per frame
+		void Update ()
 		{
-			MusicManager.mm.StopTrackIfPlaying(rg.roomStyle.musicName);
+				bool containsNow = rg.totalBounds.Contains (Camera.main.transform.position);
+				if (MusicManager.mm != null) {
+						if (containsNow && !containsTarget) {
+								MusicManager.mm.PlayTrack (rg.roomStyle.musicName);
+						} else if (containsTarget && !containsNow) {
+								MusicManager.mm.StopTrackIfPlaying (rg.roomStyle.musicName);
+						}
+				}
+				containsTarget = containsNow;
 		}
-		
-		containsTarget = containsNow;
-	}
 }

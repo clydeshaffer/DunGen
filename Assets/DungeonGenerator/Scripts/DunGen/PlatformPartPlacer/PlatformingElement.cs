@@ -25,7 +25,25 @@ public class PlatformingElement : MonoBehaviour {
 	void Update () {
 		
 	}
-	
+
+	public Vector3 getConnectorPos(int i)
+	{
+		return transform.TransformPoint (connectors [i].connectionPoint);
+	}
+
+	public Vector3 getConnectorDir(int i)
+	{
+		return transform.TransformDirection (connectors [i].normal);
+	}
+
+	public Bounds getAdjustedExclusionZone()
+	{
+		Bounds adjBounds = new Bounds();
+		adjBounds.center = transform.TransformPoint (exclusionZone.center);
+		adjBounds.extents = transform.TransformDirection (exclusionZone.extents);
+		return adjBounds;
+	}
+
 	public Vector2 CheckForConnection(PlatformingElement other, int myConnector, int allowDisplace, out Vector3 displaceVec)
 	{
 		for(int yourConnector = 0; yourConnector < other.connectors.Length; yourConnector++)

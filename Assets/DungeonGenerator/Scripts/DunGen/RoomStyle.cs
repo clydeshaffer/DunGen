@@ -9,6 +9,8 @@ public class RoomStyle : MonoBehaviour {
 
 	public MeshTransform meshTransform;
 
+	public PlatformingElement[] placeablePlatforms;
+
 	// Use this for initialization
 	void Start () {
 	

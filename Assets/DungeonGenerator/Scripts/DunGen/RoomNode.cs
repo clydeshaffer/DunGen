@@ -18,6 +18,8 @@ public class RoomNode {
 	public GameObject roomObject = null;
 	
 	public int visited = 0;
+
+	public string name = "Room";
 	
 	public bool ConnectsTo(RoomNode dest)
 	{

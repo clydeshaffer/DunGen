@@ -37,6 +37,11 @@ public class MultiRoomGen : MonoBehaviour
 		{
 			RoomGenerator.InstantiateRooms(rg.roomNodeList,rg.roomStyle);
 		}
+
+		foreach(RoomGenerator rg in roomGens)
+		{
+			RoomGenerator.FurnishRooms(rg.roomNodeList,rg.roomStyle,rg.doorPiecePrefab);
+		}
 		
 		RoomGenerator.InstantiateRooms(interCorridors, interCorridorStyle);
 		

@@ -65,7 +65,7 @@ public class Interval {
 	{
 		float min = Mathf.Max(a.min, b.min);
 		float max = Mathf.Min(a.max, b.max);
-		return (min <= max);
+		return (min < max || Util.Approximately(min,max,tol));
 	}
 	
 	//Return the overlap interval.

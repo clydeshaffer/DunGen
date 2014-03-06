@@ -68,9 +68,11 @@ public class Util {
 
 	public static Vector3 VecSign(Vector3 v)
 	{
-				return new Vector3 (Mathf.Sign (v.x),
-		                   Mathf.Sign (v.y),
-		                   Mathf.Sign (v.z));
+		Vector3 result;
+		if (Approximately (v.x, 0, 0.001f)) result.x = 0; else result.x = Mathf.Sign (v.x);
+		if (Approximately (v.y, 0, 0.001f)) result.y = 0; else result.y = Mathf.Sign (v.y);
+		if (Approximately (v.z, 0, 0.001f)) result.z = 0; else result.z = Mathf.Sign (v.z);
+		return result;
 	}
 
 	public static float VecSig(Vector3 v)
@@ -80,6 +82,16 @@ public class Util {
 		if(max == Mathf.Abs(v.y)) return v.y;
 		if(max == Mathf.Abs(v.z)) return v.z;
 		return 0;
+	}
+
+	public static int VecSigIndex(Vector3 v)
+	{
+		int ind = 0;
+		if (Mathf.Abs (v [1]) > Mathf.Abs (v [ind]))
+						ind = 1;
+		if (Mathf.Abs (v [2]) > Mathf.Abs (v [ind]))
+						ind = 2;
+		return ind;
 	}
 
 	public static int VecNonZeroIndex(Vector3 v)
@@ -118,7 +130,7 @@ public class Util {
 		return randVec;
 	}
 	
-	public static Vector3 VecEnum(int i)
+	public static Vector3 VecDenum(int i)
 	{
 		switch(i)
 		{
@@ -131,7 +143,18 @@ public class Util {
 		default: return Vector3.zero;
 		}
 	}
-	
+
+	public static int VecEnum(Vector3 v)
+	{
+		if(v == Vector3.forward) return 0;
+		if(v == Vector3.right  ) return 1;
+		if(v == Vector3.up     ) return 2;
+		if(v == Vector3.back   ) return 3;
+		if(v == Vector3.left   ) return 4;
+		if(v == Vector3.down   ) return 5;
+		throw new KeyNotFoundException ("Bad vector " + v);
+	}
+
 	public static int VecNonZeroes(Vector3 v)
 	{
 		int count = 0;
